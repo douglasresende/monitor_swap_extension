@@ -1,0 +1,37 @@
+{
+  // https://developer.chrome.com/docs/extensions/mv3/overview/
+  "manifest_version": 2,
+  "name": "Swapnex Monitor",
+  "short_name": "SwapMonitor",
+  "description": "Swapnex Monitor",
+  "version": "0.0.1",
+  "content_scripts": [
+    {
+      // "matches": ["<all_urls>"],
+      "matches": [
+        "*://*.swapnex.io/*",
+        "*://swapnex.io/*"
+      ],
+      "js": ["jquery-3.4.1.min.js", "chromeUtils.js", "content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    // "scripts": ["background.js"],
+    "page": "background/background.html",
+    "persistent": false
+  },
+  // "options_ui": {
+  //   "open_in_tab": true,
+  //   "page": "options/index.html"
+  // },
+  "browser_action": {
+    // "default_icon": "imgs/icon.png",
+    "default_title": "Swapnex Monitor",
+    "default_popup": "popup/index.html"
+  },
+  // "icons": {
+  //   "256": "imgs/icon.png"
+  // },
+  "permissions": ["tabs", "storage"]
+}

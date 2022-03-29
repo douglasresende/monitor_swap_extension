@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor Swapnex</title>
+  <link rel="stylesheet" type="text/css" href="popup.css">
+</head>
+<body>
+  <header>
+    <h3>Monitor Swapnex</h3>
+  </header>
+
+  <header style="background-color: #999;">
+    <h3>
+      <a href="https://www.youtube.com/c/OCasaldaBolsa" target="_BLANK">O Casal da Bolsa</a>
+    </h3>
+  </header>
+
+  <form>
+    <div>Target: <label id="speed">1</label>%</div>
+    <input type="range" min="5" max="20" id="speedRange" step="0.5" />
+
+    <hr>
+    <hr>
+
+    <div>Telegram</div>
+    <div id="telegramActiveBox">Active? <input type="checkbox" id="telegram_active" /></div>
+
+    <div>chat_id:</div>
+    <input type="text" id="telegram_chat_id">
+
+    <div>bot_token:</div>
+    <input type="text" id="telegram_chat_token">
+
+    <div>&nbsp;</div>
+    <button type="button" id="telegram_test_button">Test Telegram</button>
+
+    <hr>
+    <hr>
+
+    <div>Coin:</div>
+    <div>
+      <select id="coinType">
+        <option value="105">ERC20</option>
+        <option value="112">TRC20</option>
+        <option value="115">BEP20</option>
+      </select>
+    </div>
+
+    <div id="activeBox">Active? <input type="checkbox" id="active" /></div>
+    <button type="button" id="save">Save</button>
+  </form>
+
+  <script type="text/javascript" src="../jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="../chromeUtils.js"></script>
+  <script type="text/javascript" src="popup.js"></script>
+</body>
+</html>
