@@ -18,14 +18,14 @@
   </header>
 
   <form>
-    <div>Target: <label id="speed">1</label>%</div>
+    <div>Alvo: <label id="speed">1</label>%</div>
     <input type="range" min="5" max="20" id="speedRange" step="0.5" />
 
     <hr>
     <hr>
 
     <div>Telegram</div>
-    <div id="telegramActiveBox">Active? <input type="checkbox" id="telegram_active" /></div>
+    <div id="telegramActiveBox">Ativar? <input type="checkbox" id="telegram_active" class="active" /></div>
 
     <div>chat_id:</div>
     <input type="text" id="telegram_chat_id">
@@ -33,13 +33,25 @@
     <div>bot_token:</div>
     <input type="text" id="telegram_chat_token">
 
-    <div>&nbsp;</div>
-    <button type="button" id="telegram_test_button">Test Telegram</button>
+    <div>Mensagem de Teste</div>
+    <button type="button" id="telegram_test_button">Enviar Telegram</button>
 
     <hr>
     <hr>
 
-    <div>Coin:</div>
+    <div>Abrir páginas:</div>
+    <button type="button" id="open_usdt_tabs_button">USDT</button>
+
+    <hr>
+    <hr>
+
+    <div>Mostrar Valores</div>
+    <button type="button" id="show_all_values_button">Show</button>
+
+    <hr>
+    <hr>
+
+    <div>Rede:</div>
     <div>
       <select id="coinType">
         <option value="105">ERC20</option>
@@ -48,8 +60,11 @@
       </select>
     </div>
 
-    <div id="activeBox">Active? <input type="checkbox" id="active" /></div>
-    <button type="button" id="save">Save</button>
+    <div id="activeBox">Ativar AutoClick? <input type="checkbox" id="active_auto_click" class="active" /></div>
+    <div>&nbsp;</div>
+
+    <div id="activeBox">Ativar Monitor? <input type="checkbox" id="active" class="active" /></div>
+    <button type="button" id="save">Salvar</button>
   </form>
 
   <script type="text/javascript" src="../jquery-3.4.1.min.js"></script>

@@ -12,6 +12,14 @@ function setActive(activeValue) {
   return chromeStorageLocalSet({ monitor_active: activeValue });
 }
 
+function getActiveAutoClick() {
+  return chromeStorageLocalGet('monitor_active_auto_click');
+}
+
+function setActiveAutoClick(activeValue) {
+  return chromeStorageLocalSet({ monitor_active_auto_click: activeValue });
+}
+
 function getSpeed(){
   return chromeStorageLocalGet('monitor_speed');
 }

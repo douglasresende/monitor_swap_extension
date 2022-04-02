@@ -2,6 +2,7 @@
 
 const NORMALIZED_RATE = 10;
 const activeField = document.getElementById('active');
+const activeAutoClickField = document.getElementById('active_auto_click');
 const speedTxt = document.getElementById('speed');
 const speedRange = document.getElementById('speedRange');
 const coinType = document.getElementById('coinType');
@@ -9,17 +10,20 @@ const telegramActiveField = document.getElementById('telegram_active');
 const telegramChatId = document.getElementById('telegram_chat_id');
 const telegramChatToken = document.getElementById('telegram_chat_token');
 const telegramTestButton = document.getElementById('telegram_test_button');
+const openUsdtTabsButton = document.getElementById('open_usdt_tabs_button');
+const showAllValuesButton = document.getElementById('show_all_values_button');
 const saveButton = document.getElementById('save');
 
 // ESTADO DA APLICACAO
 let initialState,
   state = {
-    monitor_active: null,
-    monitor_speed: null,
-    monitor_coin_type: null,
-    monitor_telegram_active: null,
-    monitor_telegram_chat_id: null,
-    monitor_telegram_chat_token: null,
+    monitor_active: false,
+    monitor_active_auto_click: false,
+    monitor_speed: 1,
+    monitor_coin_type: "",
+    monitor_telegram_active: false,
+    monitor_telegram_chat_id: "",
+    monitor_telegram_chat_token: "",
   };
 
 (async function(){
@@ -30,6 +34,9 @@ let initialState,
 
   updateActiveField();
   addListenerActiveField();
+
+  updateActiveAutoClickField();
+  addListenerActiveAutoClickField();
 
   updateSpeed();
   addListenerRange();
@@ -48,12 +55,16 @@ let initialState,
 
   addListenerButton();
   addListenerTelegramButton();
+
+  addListenerOpenUsdtTabsButton();
+  addListenerShowAllValuesButton();
 })();
 
 // Active
 async function getInitialState(){
   return {
     monitor_active: await getActive(),
+    monitor_active_auto_click: await getActiveAutoClick(),
     monitor_speed: await getSpeed(),
     monitor_coin_type: await getCoinType(),
     monitor_telegram_active: await getTelegramActive(),
@@ -62,6 +73,7 @@ async function getInitialState(){
   }
 }
 
+// Monitor Active?
 function updateActiveField(){
   activeField.checked = state.monitor_active;
 }
@@ -75,6 +87,22 @@ function addListenerActiveField(){
 function onActiveFieldClicked(event){
   state.monitor_active = event.target.checked;
   updateActiveField();
+}
+
+// AutoClick Active?
+function updateActiveAutoClickField(){
+  activeAutoClickField.checked = state.monitor_active_auto_click;
+}
+
+function addListenerActiveAutoClickField(){
+  activeAutoClickField.onclick = (event) => {
+    onActiveAutoClickFieldClicked(event)
+  };
+}
+
+function onActiveAutoClickFieldClicked(event){
+  state.monitor_active_auto_click = event.target.checked;
+  updateActiveAutoClickField();
 }
 
 // Speed
@@ -106,9 +134,24 @@ function addListenerButton(){
   };
 }
 
+// Telegram Test Button
 function addListenerTelegramButton(){
   telegramTestButton.onclick = (event) => {
     onTelegramTestButtonClick(event);
+  };
+}
+
+// Open USDT Tabs Button
+function addListenerOpenUsdtTabsButton(){
+  openUsdtTabsButton.onclick = (event) => {
+    sendMessage('monitor_open_all_usdt_tabs');
+  };
+}
+
+// Show All Values Button
+function addListenerShowAllValuesButton(){
+  showAllValuesButton.onclick = (event) => {
+    sendMessage('monitor_show_all_values');
   };
 }
 
@@ -180,17 +223,19 @@ function onTelegramChatTokenClicked(event){
 async function onSaveButtonClick(event) {
   setSavingText(event.target);
   // VERIFICAR SE ESTADO ATUAL E DIFERENTE DO ATUAL
-  if(state.monitor_active != initialState.monitor_active) await saveActive();
-  if(state.monitor_speed != initialState.monitor_speed) await saveSpeed();
-  if(state.monitor_coin_type != initialState.monitor_coin_type) await saveCoinType();
-  if(state.monitor_telegram_active != initialState.monitor_telegram_active) await saveTelegramActive();
-  if(state.monitor_telegram_chat_id != initialState.monitor_telegram_chat_id) await saveTelegramChatId();
+  if(state.monitor_active_auto_click   != initialState.monitor_active_auto_click)   await saveActiveAutoClick();
+  if(state.monitor_speed               != initialState.monitor_speed)               await saveSpeed();
+  if(state.monitor_coin_type           != initialState.monitor_coin_type)           await saveCoinType();
+  if(state.monitor_telegram_active     != initialState.monitor_telegram_active)     await saveTelegramActive();
+  if(state.monitor_telegram_chat_id    != initialState.monitor_telegram_chat_id)    await saveTelegramChatId();
   if(state.monitor_telegram_chat_token != initialState.monitor_telegram_chat_token) await saveTelegramChatToken();
+  await sendMessage('monitor_update_attributes');
+  if(state.monitor_active              != initialState.monitor_active)              await saveActive();
   initialState = { ...state };
 }
 
 function setSavingText(element) {
-  element.innerText = 'Salvando...';
+  element.innerText = '...';
   setTimeout(() => {
     element.innerText = 'Salvar';
   },300);
@@ -202,36 +247,34 @@ async function saveActive(){
   else await sendMessage('monitor_deactivate');
 }
 
+async function saveActiveAutoClick(){
+  await setActiveAutoClick(state.monitor_active_auto_click);
+}
+
 async function saveSpeed(){
   await setSpeed(state.monitor_speed);
-  await sendMessage('monitor_speedChanged');
+  // await sendMessage('monitor_speedChanged');
 }
 
 async function saveCoinType(){
   await setCoinType(state.monitor_coin_type);
-  if (state.monitor_coin_type) await sendMessage('monitor_coin_type');
-  else await sendMessage('monitor_coin_type');
 }
 
 async function saveTelegramActive(){
   await setTelegramActive(state.monitor_telegram_active);
-  if (state.monitor_telegram_active) await sendMessage('monitor_telegram_activate');
-  else await sendMessage('monitor_telegram_deactivate');
 }
 
 async function saveTelegramChatId(){
   await setTelegramChatId(state.monitor_telegram_chat_id);
-  await sendMessage('monitor_telegram_chat_id');
 }
 
 async function saveTelegramChatToken(){
   await setTelegramChatToken(state.monitor_telegram_chat_token);
-  await sendMessage('monitor_telegram_chat_token');
 }
 
 async function onTelegramTestButtonClick(event) {
   try {
-    let message = 'Monitor Swapnex: This is a test message.';
+    let message = 'Monitor Swapnex: Teste de mensagem.';
     let options = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

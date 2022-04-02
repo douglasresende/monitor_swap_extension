@@ -40,7 +40,7 @@ div#activeBox {
   display: flex;
   align-items: center;
 }
-input#active {
+input.active {
   margin-left: 10px;
   transform: scale(1.2);
 }
@@ -50,7 +50,7 @@ input#telegram_chat_id {
   border-radius: 4px;
   border: 1px solid #ccc;
   padding: 4px;
-  font-size: 12px;
+  font-size: 11px;
   font-family: monospace;
 }
 
@@ -59,7 +59,7 @@ input#telegram_chat_token {
   border-radius: 4px;
   border: 1px solid #ccc;
   padding: 4px;
-  font-size: 12px;
+  font-size: 11px;
   font-family: monospace;
 }
 
@@ -68,7 +68,7 @@ select#coinType {
   border-radius: 4px;
   border: 1px solid #ccc;
   padding: 4px;
-  font-size: 12px;
+  font-size: 11px;
   font-family: monospace;
 }
 

@@ -3,12 +3,14 @@
 class MonitorSwapnex {
   constructor() {
     this.usar_monitor           = true;  // true = SIM / false = NAO
+    this.usar_auto_click        = true;  // true = SIM / false = NAO
     this.valor_alerta           = 1.05;  // PERCENT
     this.valor_max_alerta       = 3.0;   // PERCENT // GERALMENTE NAO ACEITA EMITIR ORDEM COM VALOR ACIMA DE 3%
     this.valor_alerta_no_titulo = 0.7;   // PERCENT
     this.telegram_active        = false; // true = SIM / false = NAO
     this.telegram_chat_id       = '';
     this.telegram_chat_token    = '';
+    this.ultimo_maior_valor     = 0;
     this.setCampoMaiorValor();
   }
 
@@ -24,7 +26,7 @@ class MonitorSwapnex {
   }
 
   ligar() {
-    this.id_interval = setInterval(this.descobrirMelhorValor.bind(this), 3000);
+    this.id_interval = setInterval(this.descobrirMelhorValor.bind(this), 4000);
   }
 
   desligar() {
@@ -54,21 +56,29 @@ class MonitorSwapnex {
     return parseFloat($("span[manual_profit_parcent]").html().replace('%',''));
   }
 
+  mostrarUltimoMaiorValor(){
+    document.title = this.ultimo_maior_valor;
+  }
+
   async descobrirMelhorValor() {
     var maior_valor = { bolsa_1: 0, bolsa_2: 0, valor: 0 };
     $('input[name="left"]').map(function(x){
-      // SELECIONAR PRIMEIRA BOLSA
-      this.click();
-      $('input[name="right"]').map(function(y){
-        // SELECIONAR SEGUNDA BOLSA
+      if($(this).parent().parent().parent().parent().parent().parent().find('div:first').find('div:last')[0].innerHTML != '-'){
+        // SELECIONAR PRIMEIRA BOLSA
         this.click();
-        var current_value = parseFloat($("span[manual_profit_parcent]").html().replace('%',''));
-        if (maior_valor['valor'] < current_value) {
-          maior_valor['bolsa_1'] = (x+1);
-          maior_valor['bolsa_2'] = (y+1);
-          maior_valor['valor'] = current_value;
-        }
-      })
+        $('input[name="right"]').map(function(y){
+          if($(this).parent().parent().parent().parent().parent().find('div:last')[0].innerHTML != '-'){
+            // SELECIONAR SEGUNDA BOLSA
+            this.click();
+            var current_value = parseFloat($("span[manual_profit_parcent]").html().replace('%',''));
+            if (maior_valor['valor'] < current_value) {
+              maior_valor['bolsa_1'] = (x+1);
+              maior_valor['bolsa_2'] = (y+1);
+              maior_valor['valor'] = current_value;
+            }
+          }
+        })
+      }
     });
     if(maior_valor['bolsa_1'] > 0 && maior_valor['bolsa_2'] > 0){
       // CLICA NA PRIMEIRA BOLSA
@@ -77,6 +87,7 @@ class MonitorSwapnex {
       $('input[name="right"]')[maior_valor['bolsa_2']-1].click();
 
       // SE VALOR MAIOR QUE 0.7% MOSTRAR MELHOR VALOR NO TITULO DA PAGINA
+      this.ultimo_maior_valor = maior_valor['valor'];
       if (maior_valor['valor'] >= this.valor_alerta_no_titulo){
         document.title = maior_valor['valor'];
       } else {
@@ -89,11 +100,12 @@ class MonitorSwapnex {
         this.campo_maior_valor.data('maior_valor_data', ((new Date()).toString().slice(16, 24)));
       }
 
-      if (this.usar_monitor && maior_valor['valor'] >= this.valor_alerta && maior_valor['valor'] <= this.valor_max_alerta){
+      if (this.usar_monitor && this.usar_auto_click && maior_valor['valor'] >= this.valor_alerta && maior_valor['valor'] <= this.valor_max_alerta){
         $('button[class="btn_order"]').first().trigger('click');
         this.usar_monitor = false;
         this.notificarTelegram();
         setActive(false);
+        this.desligar();
       }
     }
 
@@ -158,6 +170,7 @@ const NORMAL_SPEED = 1;
 
 const state = {
   monitor_active: null,
+  monitor_active_auto_click: false,
   monitor_speed: null,
   monitor_coin_type: 115,
   monitor_telegram_active: false,
@@ -171,8 +184,7 @@ const state = {
   activate();
 })();
 
-async function activate(){
-
+async function monitorUpdateAttributes(){
   state.monitor_coin_type = await getCoinType();
   state.monitor_telegram_active = await getTelegramActive();
   state.monitor_telegram_chat_id = await getTelegramChatId();
@@ -182,14 +194,19 @@ async function activate(){
   state.monitor_swapnex_auto_click.telegram_chat_id = state.monitor_telegram_chat_id;
   state.monitor_swapnex_auto_click.telegram_chat_token = state.monitor_telegram_chat_token;
 
+  state.monitor_active_auto_click = await getActiveAutoClick();
+  state.monitor_swapnex_auto_click.usar_auto_click = state.monitor_active_auto_click;
+
+  state.monitor_speed = await getSpeed();
+  state.monitor_swapnex_auto_click.valor_alerta = state.monitor_speed;
+}
+async function activate(){
+  monitorUpdateAttributes();
   // VERIFICAR SE A EXTENSAO TA ATIVA
   state.monitor_active = await getActive();
   // SE NAO TIVER ATIVA, PARAR EXECUCAO
   if(!state.monitor_active) return;
-  // SE NAO, SETAR VELOCIDADE PADRAO
-  state.monitor_speed = await getSpeed();
 
-  state.monitor_swapnex_auto_click.valor_alerta = state.monitor_speed;
   state.monitor_swapnex_auto_click.ligarMonitor();
 }
 
@@ -199,11 +216,30 @@ function messageActions(message){
   switch (message) {
     case 'monitor_speedChanged':
       if (state.monitor_active) updateAndSetSpeed();
+      break;
     case 'monitor_activate':
       activate();
+      break;
     case 'monitor_deactivate':
       deactivate();
+      break;
+    case 'monitor_show_all_values':
+      state.monitor_swapnex_auto_click.mostrarUltimoMaiorValor();
+      break;
+    case 'monitor_open_all_usdt_tabs':
+      openAllUsdtTabs();
+      break;
+    case 'monitor_update_attributes':
+      monitorUpdateAttributes();
+      break;
   }
+}
+
+function openAllUsdtTabs(){
+  var locs = ['5','10','6','7','8','12','14','16','18','20','22'];
+  for (let i = 0; i < locs.length; i++) {
+    window.open('https://swapnex.io/products/manual/'+locs[i], '_blank');
+  };
 }
 
 async function updateAndSetSpeed(){

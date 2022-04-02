@@ -6,6 +6,7 @@ onExtensionInstalled(setInitial);
 
 function setInitial(){
   setInitialActive();
+  setInitialActiveAutoClick();
   setInitialSpeed();
   setInitialCoinType();
   setInitialTelegramActive();
@@ -16,6 +17,11 @@ function setInitial(){
 async function setInitialActive(){
   const monitor_active = await getActive();
   if (monitor_active == null) await setActive(true);
+}
+
+async function setInitialActiveAutoClick(){
+  const monitor_active_auto_click = await getActiveAutoClick();
+  if (monitor_active_auto_click == null) await setActiveAutoClick(true);
 }
 
 async function setInitialSpeed(){
