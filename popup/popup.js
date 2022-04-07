@@ -13,6 +13,7 @@ const telegramTestButton = document.getElementById('telegram_test_button');
 const openUsdtTabsButton = document.getElementById('open_usdt_tabs_button');
 const showAllValuesButton = document.getElementById('show_all_values_button');
 const saveButton = document.getElementById('save');
+const comoDoarButton = document.getElementById('btn_como_doar');
 
 // ESTADO DA APLICACAO
 let initialState,
@@ -58,6 +59,8 @@ let initialState,
 
   addListenerOpenUsdtTabsButton();
   addListenerShowAllValuesButton();
+
+  addListenerComoDoarButton();
 })();
 
 // Active
@@ -217,6 +220,14 @@ function addListenerTelegramChatToken(){
 function onTelegramChatTokenClicked(event){
   state.monitor_telegram_chat_token = event.target.value;
   updateTelegramChatToken();
+}
+
+// BOTAO COMO DOAR
+function addListenerComoDoarButton(){
+  comoDoarButton.onclick = (event) => {
+    event.preventDefault();
+    document.getElementById('formComoDoar').style.display = 'block';
+  };
 }
 
 // Save Button
