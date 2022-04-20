@@ -60,6 +60,14 @@ function setTelegramChatToken(value) {
   return chromeStorageLocalSet({ monitor_telegram_chat_token: value });
 }
 
+function getTelegramSoundActive() {
+  return chromeStorageLocalGet('monitor_telegram_sound_active');
+}
+
+function setTelegramSoundActive(activeValue) {
+  return chromeStorageLocalSet({ monitor_telegram_sound_active: activeValue });
+}
+
 function onMessage(listener){
   chromeRuntimeOnMessageAddListener(listener);
 }

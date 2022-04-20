@@ -9,7 +9,8 @@ class MonitorSwapnex {
     this.valor_alerta_no_titulo = 0.7;   // PERCENT
     this.telegram_active        = false; // true = SIM / false = NAO
     this.telegram_chat_id       = '';
-    this.telegram_chat_token    = '';
+    this.telegram_chat_token = '';
+    this.telegram_sound_active        = false; // true = SIM / false = NAO
     this.ultimo_maior_valor     = 0;
     this.setCampoMaiorValor();
   }
@@ -144,7 +145,7 @@ class MonitorSwapnex {
             text: message,
             parse_mode: 'Markdown',
             disable_web_page_preview: false,
-            disable_notification: true,
+            disable_notification: !this.telegram_sound_active,
             chat_id: this.telegram_chat_id
           })
         };
@@ -176,6 +177,7 @@ const state = {
   monitor_telegram_active: false,
   monitor_telegram_chat_id: null,
   monitor_telegram_chat_token: null,
+  monitor_telegram_sound_active: false,
   monitor_swapnex_auto_click: new MonitorSwapnex(),
 };
 
@@ -189,10 +191,12 @@ async function monitorUpdateAttributes(){
   state.monitor_telegram_active = await getTelegramActive();
   state.monitor_telegram_chat_id = await getTelegramChatId();
   state.monitor_telegram_chat_token = await getTelegramChatToken();
+  state.monitor_telegram_sound_active = await getTelegramSoundActive();
 
   state.monitor_swapnex_auto_click.telegram_active = state.monitor_telegram_active;
   state.monitor_swapnex_auto_click.telegram_chat_id = state.monitor_telegram_chat_id;
   state.monitor_swapnex_auto_click.telegram_chat_token = state.monitor_telegram_chat_token;
+  state.monitor_swapnex_auto_click.telegram_sound_active = state.monitor_telegram_sound_active;
 
   state.monitor_active_auto_click = await getActiveAutoClick();
   state.monitor_swapnex_auto_click.usar_auto_click = state.monitor_active_auto_click;
