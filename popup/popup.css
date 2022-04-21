@@ -114,3 +114,24 @@ button:hover {
   background-color: #fff;
   color: #000;
 }
+
+
+a.btn {
+  font-family: system-ui;
+  padding: 4px;
+  text-transform: uppercase;
+  font-weight: bold;
+  cursor: pointer;
+  /*background-color: #fff;*/
+  background-color: #357edd;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  transition: 0.5s background-color;
+  color: #fff;
+  font-size: 10px;
+}
+a.btn:hover {
+  font-family: system-ui;
+  background-color: #fff;
+  color: #000;
+}
