@@ -12,6 +12,7 @@ function setInitial(){
   setInitialTelegramActive();
   setInitialTelegramChatId();
   setInitialTelegramChatToken();
+  setInitialTelegramSoundActive();
 }
 
 async function setInitialActive(){
@@ -47,4 +48,9 @@ async function setInitialTelegramChatId(){
 async function setInitialTelegramChatToken(){
   const monitor_telegram_chat_token = await getTelegramChatToken();
   if (monitor_telegram_chat_token == null) await setTelegramChatToken('');
+}
+
+async function setInitialTelegramSoundActive(){
+  const monitor_telegram_sound_active = await getTelegramSoundActive();
+  if (monitor_telegram_sound_active == null) await setTelegramSoundActive(false);
 }

@@ -9,6 +9,7 @@ const coinType = document.getElementById('coinType');
 const telegramActiveField = document.getElementById('telegram_active');
 const telegramChatId = document.getElementById('telegram_chat_id');
 const telegramChatToken = document.getElementById('telegram_chat_token');
+const telegramSoundActiveField = document.getElementById('telegram_sound_active');
 const telegramTestButton = document.getElementById('telegram_test_button');
 const openUsdtTabsButton = document.getElementById('open_usdt_tabs_button');
 const showAllValuesButton = document.getElementById('show_all_values_button');
@@ -25,6 +26,7 @@ let initialState,
     monitor_telegram_active: false,
     monitor_telegram_chat_id: "",
     monitor_telegram_chat_token: "",
+    monitor_telegram_sound_active: false,
   };
 
 (async function(){
@@ -54,6 +56,9 @@ let initialState,
   updateTelegramChatToken();
   addListenerTelegramChatToken();
 
+  updateTelegramSoundActiveField();
+  addListenerTelegramSoundActiveField();
+
   addListenerButton();
   addListenerTelegramButton();
 
@@ -73,6 +78,7 @@ async function getInitialState(){
     monitor_telegram_active: await getTelegramActive(),
     monitor_telegram_chat_id: await getTelegramChatId(),
     monitor_telegram_chat_token: await getTelegramChatToken(),
+    monitor_telegram_sound_active: await getTelegramSoundActive(),
   }
 }
 
@@ -222,6 +228,22 @@ function onTelegramChatTokenClicked(event){
   updateTelegramChatToken();
 }
 
+// Telegram Sound Active
+function updateTelegramSoundActiveField(){
+  telegramSoundActiveField.checked = state.monitor_telegram_sound_active;
+}
+
+function addListenerTelegramSoundActiveField(){
+  telegramSoundActiveField.onclick = (event) => {
+    onTelegramSoundActiveFieldClicked(event)
+  };
+}
+
+function onTelegramSoundActiveFieldClicked(event){
+  state.monitor_telegram_sound_active = event.target.checked;
+  updateTelegramSoundActiveField();
+}
+
 // BOTAO COMO DOAR
 function addListenerComoDoarButton(){
   comoDoarButton.onclick = (event) => {
@@ -239,7 +261,8 @@ async function onSaveButtonClick(event) {
   if(state.monitor_coin_type           != initialState.monitor_coin_type)           await saveCoinType();
   if(state.monitor_telegram_active     != initialState.monitor_telegram_active)     await saveTelegramActive();
   if(state.monitor_telegram_chat_id    != initialState.monitor_telegram_chat_id)    await saveTelegramChatId();
-  if(state.monitor_telegram_chat_token != initialState.monitor_telegram_chat_token) await saveTelegramChatToken();
+  if (state.monitor_telegram_chat_token != initialState.monitor_telegram_chat_token) await saveTelegramChatToken();
+  if(state.monitor_telegram_sound_active     != initialState.monitor_telegram_sound_active)     await saveTelegramSoundActive();
   await sendMessage('monitor_update_attributes');
   if(state.monitor_active              != initialState.monitor_active)              await saveActive();
   initialState = { ...state };
@@ -283,6 +306,10 @@ async function saveTelegramChatToken(){
   await setTelegramChatToken(state.monitor_telegram_chat_token);
 }
 
+async function saveTelegramSoundActive(){
+  await setTelegramSoundActive(state.monitor_telegram_sound_active);
+}
+
 async function onTelegramTestButtonClick(event) {
   try {
     let message = 'Monitor Swapnex: Teste de mensagem.';
@@ -293,7 +320,7 @@ async function onTelegramTestButtonClick(event) {
         text: message,
         parse_mode: 'Markdown',
         disable_web_page_preview: false,
-        disable_notification: true,
+        disable_notification: !state.monitor_telegram_sound_active,
         chat_id: state.monitor_telegram_chat_id
       })
     };

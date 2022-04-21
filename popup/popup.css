@@ -87,6 +87,16 @@ input#telegram_active {
   transform: scale(1.2);
 }
 
+div#telegramSoundActiveBox {
+  display: flex;
+  align-items: center;
+}
+
+input.telegram_sound {
+  margin-left: 10px;
+  transform: scale(1.2);
+}
+
 button {
   padding: 4px;
   text-transform: uppercase;
