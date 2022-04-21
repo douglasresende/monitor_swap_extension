@@ -27,7 +27,7 @@ class MonitorSwapnex {
   }
 
   ligar() {
-    this.id_interval = setInterval(this.descobrirMelhorValor.bind(this), 4000);
+    this.id_interval = setInterval(this.descobrirMelhorValor.bind(this), 3000);
   }
 
   desligar() {
@@ -72,7 +72,7 @@ class MonitorSwapnex {
             // SELECIONAR SEGUNDA BOLSA
             this.click();
             var current_value = parseFloat($("span[manual_profit_parcent]").html().replace('%',''));
-            if (maior_valor['valor'] < current_value) {
+            if (maior_valor['valor'] < current_value && current_value <= 3.0) {
               maior_valor['bolsa_1'] = (x+1);
               maior_valor['bolsa_2'] = (y+1);
               maior_valor['valor'] = current_value;
