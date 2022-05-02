@@ -90,9 +90,9 @@ class MonitorSwapnex {
       // SE VALOR MAIOR QUE 0.7% MOSTRAR MELHOR VALOR NO TITULO DA PAGINA
       this.ultimo_maior_valor = maior_valor['valor'];
       if (maior_valor['valor'] >= this.valor_alerta_no_titulo){
-        document.title = maior_valor['valor'];
+        document.title = this.nomeMoeda2() + " " + maior_valor['valor'];
       } else {
-        document.title = '.';
+        document.title = this.nomeMoeda2() + ' .';
       }
 
       // MOSTRAR MAIOR VALOR JA REGISTRADO HOJE
